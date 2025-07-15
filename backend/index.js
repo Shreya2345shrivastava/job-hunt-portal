@@ -35,11 +35,12 @@ app.use("/api/v1/application", applicationRoute);
 // Connect to DB, then start server
 connectDB()
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running at port ${PORT}`);
+    // ✅ Fix: bind to '0.0.0.0' for Render
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`✅ Server running at port ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("Failed to connect to DB:", err);
+    console.error("❌ Failed to connect to DB:", err);
     process.exit(1); // exit app if DB connection fails
   });
