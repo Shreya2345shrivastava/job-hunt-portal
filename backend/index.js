@@ -17,10 +17,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ✅ CORS options for frontend deployed on Vercel
+const whitelist = [process.env.FRONTEND_URL];
+console.log("Whitelist:", whitelist);
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "https://your-frontend.vercel.app",
-  credentials: true,
+  origin: function (origin, callback) {
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
 };
 
 app.use(cors(corsOptions));
