@@ -17,14 +17,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// ✅ CORS options for frontend deployed on Vercel
 const corsOptions = {
-  origin: process.env.frontend_URL,
+  origin: process.env.FRONTEND_URL || "https://your-frontend.vercel.app",
   credentials: true,
 };
 
 app.use(cors(corsOptions));
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 // API routes
 app.use("/api/v1/user", userRoute);
@@ -35,12 +36,12 @@ app.use("/api/v1/application", applicationRoute);
 // Connect to DB, then start server
 connectDB()
   .then(() => {
-    // ✅ Fix: bind to '0.0.0.0' for Render
-    app.listen(PORT, '0.0.0.0', () => {
+    // ✅ Required for Render deployment
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`✅ Server running at port ${PORT}`);
     });
   })
   .catch((err) => {
     console.error("❌ Failed to connect to DB:", err);
-    process.exit(1); // exit app if DB connection fails
+    process.exit(1);
   });

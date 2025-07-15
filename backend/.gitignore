@@ -1,2 +1,15 @@
-.env
+# Node.js
 node_modules
+.env
+.DS_Store
+*.log
+
+# Optional for VS Code
+.vscode/
+
+# Optional for Vercel
+.vercel/
+
+# Ignore build output (if using frontend in same repo)
+dist
+build

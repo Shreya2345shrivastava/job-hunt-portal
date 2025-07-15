@@ -1,59 +1,47 @@
 import mongoose from "mongoose";
 
 const uniSchema = new mongoose.Schema({
-    loginHistory: [{
-        type: Date,
-        default: []
-    }],
-    studentLogin: {
-        type: Number,
-        default: 0,
-    },
-    recruiterLogin: {
-        type: Number,
-        default: 0, 
-    }
+  loginHistory: [{
+    type: Date,
+    default: Date.now
+  }],
+  studentLogin: {
+    type: Number,
+    default: 0,
+  },
+  recruiterLogin: {
+    type: Number,
+    default: 0,
+  }
 }, { timestamps: true });
 
+// Method to track login by role
+uniSchema.methods.trackLogin = function (role) {
+  const now = new Date();
 
+  // Add current login
+  this.loginHistory.push(now);
 
+  // Filter only last 30 days
+  this.loginHistory = this.loginHistory.filter(
+    login => (now - login) <= 30 * 24 * 60 * 60 * 1000
+  );
 
-uniSchema.methods.trackLogin = function(){
-    const now = new Date();
-    
-    this.loginHistory.push(now);
-
-    
-    this.loginHistory = this.loginHistory.filter(login => (now - login) <= 30 * 24 * 60 * 60 * 1000);
-
-    
-    if (this.role === 'student') {
-        this.studentLogin = this.loginHistory.length;
-    } else if (this.role === 'recruiter') {
-        this.recruiterLogin = this.loginHistory.length;
-    }
+  // Increment based on role
+  if (role === 'student') {
+    this.studentLogin += 1;
+  } else if (role === 'recruiter') {
+    this.recruiterLogin += 1;
+  }
 };
 
-
-
-
-uniSchema.pre('save', function(next) {
-    const now = new Date();
-    
-    this.loginHistory = this.loginHistory.filter(login => (now - login) <= 30 * 24 * 60 * 60 * 1000);
-
-    // Recalculate login counts
-    if (this.role === 'student') {
-        this.studentLogin = this.loginHistory.length;
-    } else if (this.role === 'recruiter') {
-        this.recruiterLogin = this.loginHistory.length;
-    }
-
-    next();
+// Clean old history before save
+uniSchema.pre('save', function (next) {
+  const now = new Date();
+  this.loginHistory = this.loginHistory.filter(
+    login => (now - login) <= 30 * 24 * 60 * 60 * 1000
+  );
+  next();
 });
 
 export const Uni = mongoose.model('Uni', uniSchema);
-
-
-
-
