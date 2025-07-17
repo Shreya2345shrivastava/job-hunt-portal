@@ -17,18 +17,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// ✅ CORS fix
 const whitelist = [process.env.FRONTEND_URL];
-console.log("Whitelist:", whitelist);
+console.log("Whitelist:", whitelist); // Debug log
 
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin || whitelist.includes(origin)) {
       callback(null, true);
     } else {
+      console.error("Blocked by CORS:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -44,7 +46,6 @@ app.use("/api/v1/application", applicationRoute);
 // Connect to DB, then start server
 connectDB()
   .then(() => {
-    // ✅ Required for Render deployment
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`✅ Server running at port ${PORT}`);
     });
