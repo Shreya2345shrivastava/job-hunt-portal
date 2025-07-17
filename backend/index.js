@@ -37,6 +37,11 @@ app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 8000;
 
+// ✅ Default route for Render test
+app.get("/", (req, res) => {
+  res.send("✅ Backend is working!");
+});
+
 // API routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/company", companyRoute);
