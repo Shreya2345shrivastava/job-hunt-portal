@@ -7,9 +7,12 @@ const otpStore = {};
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { fullname, email, password, role } = req.body;
+    console.log("fullname:", fullname);
+    console.log("email:", email);
+    console.log("role:", role);
 
-    if (!name || !email || !password || !role) {
+    if (!fullname || !email || !password || !role) {
       return res
         .status(400)
         .json({ message: "All fields are required", success: false });
@@ -26,7 +29,7 @@ export const register = async (req, res) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     otpStore[email] = {
       otp,
-      userData: { name, email, password, role, avatar: req.file?.path || "" },
+      userData: { fullname, email, password, role, avatar: req.file?.path || "" },
     };
 
     console.log("OTP sent (for testing):", otp); // Replace with actual email/SMS
