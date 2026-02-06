@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Navbar from '../shared/Navbar'
 import { Label } from '../ui/label'
 import { Input } from '../ui/input'
 import { RadioGroup } from '../ui/radio-group'
 import { Button } from '../ui/button'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axiosInstance from '@/api/axiosInstance'
 import { USER_API_END_POINT } from '@/utils/constant'
 import { toast } from 'sonner'
 import { useDispatch, useSelector } from 'react-redux'
-import { setLoading, setUser } from '@/redux/authSlice'
+import { setLoading } from '@/redux/authSlice'
 import { Loader2 } from 'lucide-react'
 
 const Login = () => {
@@ -30,11 +30,10 @@ const Login = () => {
         e.preventDefault();
         try {
             dispatch(setLoading(true));
-            const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
+            const res = await axiosInstance.post(`${USER_API_END_POINT}/login`, input, {
                 headers: {
                     "Content-Type": "application/json"
-                },
-                withCredentials: true,
+                }
             });
             
             if (res.data.success) {
@@ -46,7 +45,7 @@ const Login = () => {
             }
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error?.response?.data?.message || 'Login failed. Please check your credentials.');
         } finally {
             dispatch(setLoading(false));
         }
@@ -113,7 +112,7 @@ const Login = () => {
                         <Button type="submit" className="w-full my-4">Login</Button>
                     )}
                     <span className='text-sm'>
-                        Don't have an account? <Link to="/signup" className='text-blue-600'>Signup</Link>
+                        Don&apos;t have an account? <Link to="/signup" className='text-blue-600'>Signup</Link>
                     </span>
                 </form>
             </div>

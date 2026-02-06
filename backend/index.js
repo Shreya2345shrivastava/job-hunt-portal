@@ -17,22 +17,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ✅ CORS fix
-const whitelist = [process.env.FRONTEND_URL];
-console.log("Whitelist:", whitelist); // Debug log
-
+// ✅ CORS configuration with proper credentials handling
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || whitelist.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.error("Blocked by CORS:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200,
 };
 
+console.log("CORS Origin:", corsOptions.origin);
 app.use(cors(corsOptions));
 
 const PORT = process.env.PORT || 8000;

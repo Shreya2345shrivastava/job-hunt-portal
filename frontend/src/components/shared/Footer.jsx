@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
+import axiosInstance from '@/api/axiosInstance';
+import { JOB_API_END_POINT } from '@/utils/constant';
 
 const Footer = () => {
   const { user, totalRecruiterLogins, totalStudentLogins, totalActiveUsers } = useSelector(store => store.auth);
@@ -13,7 +14,7 @@ const Footer = () => {
     const fetchJobAnalytics = async () => {
       try {
         // Send GET request to the API
-        const response = await axios.get("http://localhost:8000/api/v1/job/getTotalJobPostedLast30Days");
+        const response = await axiosInstance.get(`${JOB_API_END_POINT}/getTotalJobPostedLast30Days`);
 
         
 

@@ -5,7 +5,7 @@ import { Input } from '../ui/input'
 import { Button } from '../ui/button'
 import { useSelector } from 'react-redux'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
-import axios from 'axios'
+import axiosInstance from '@/api/axiosInstance'
 import { JOB_API_END_POINT } from '@/utils/constant'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
@@ -43,9 +43,7 @@ const PostJob = () => {
         try {
             setLoading(true);
             console.log("pinku");
-            const res = await axios.post(`${JOB_API_END_POINT}/post`, input,{
-                withCredentials:true
-            });
+            const res = await axiosInstance.post(`${JOB_API_END_POINT}/post`, input);
             console.log("pinku");
             
             if(res.data.success){
