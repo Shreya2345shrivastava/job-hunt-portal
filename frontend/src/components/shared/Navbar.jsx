@@ -12,8 +12,6 @@ import { toast } from 'sonner'
 
 const Navbar = () => {
     const { user } = useSelector(store => store.auth);
-    // console.log("shuru")
-    console.log(user);
     
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -28,7 +26,7 @@ const Navbar = () => {
             }
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error?.response?.data?.message || "Logout failed");
         }
     }
     return (

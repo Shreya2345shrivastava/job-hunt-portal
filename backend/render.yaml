@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: job-hunt-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: NODE_ENV
+        value: production
