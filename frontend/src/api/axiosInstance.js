@@ -1,8 +1,17 @@
 import axios from 'axios';
 
+// Get base URL from environment variable
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+if (!API_BASE_URL) {
+  console.warn('⚠️ VITE_API_URL is not set. Using localhost. Set env vars on Vercel!');
+}
+
+console.log('✅ Axios baseURL:', API_BASE_URL || 'http://localhost:8000');
+
 // Create axios instance with base configuration
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+  baseURL: API_BASE_URL || 'http://localhost:8000',
   withCredentials: true, // Always send cookies
 });
 
@@ -11,6 +20,8 @@ axiosInstance.interceptors.request.use(
   (config) => {
     // Ensure credentials are sent for all requests
     config.withCredentials = true;
+    // Log the full URL for debugging
+    console.log(`📤 ${config.method.toUpperCase()} ${config.baseURL}${config.url}`);
     return config;
   },
   (error) => {
@@ -21,6 +32,7 @@ axiosInstance.interceptors.request.use(
 // Response interceptor for global error handling
 axiosInstance.interceptors.response.use(
   (response) => {
+    console.log(`✅ ${response.status} ${response.config.url}`);
     return response;
   },
   (error) => {
@@ -29,19 +41,23 @@ axiosInstance.interceptors.response.use(
       // Server responded with error status
       const status = error.response.status;
       const message = error.response?.data?.message || 'An error occurred';
+      const url = error.config?.url;
+
+      console.error(`❌ ${status} ${url} - ${message}`);
+
+      if (status === 404) {
+        console.error('🔴 404 Not Found! Check your API endpoint URL.');
+        console.error('Expected URL:', error.config?.baseURL + error.config?.url);
+      }
 
       switch (status) {
         case 401:
-          // Unauthorized - likely JWT expired or invalid
           console.error('Unauthorized:', message);
-          // Could add redirect to login here if needed
           break;
         case 400:
-          // Bad request
           console.error('Bad request:', message);
           break;
         case 500:
-          // Server error
           console.error('Server error:', message);
           break;
         default:
@@ -49,10 +65,10 @@ axiosInstance.interceptors.response.use(
       }
     } else if (error.request) {
       // Request made but no response
-      console.error('Network error - no response:', error.request);
+      console.error('🔴 Network error - no response from server:', error.message);
     } else {
       // Error in request setup
-      console.error('Error:', error.message);
+      console.error('🔴 Error:', error.message);
     }
 
     return Promise.reject(error);
